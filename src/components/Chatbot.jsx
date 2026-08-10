@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Send, Loader2, Bot} from "lucide-react";
+import { Send, Loader2, Bot, Volume2 } from "lucide-react"; // <-- Tambah import Volume2
 import ReactMarkdown from "react-markdown";
 
 export default function Chatbot({ currentMoisture }) {
@@ -13,47 +13,64 @@ export default function Chatbot({ currentMoisture }) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // FUNGSI Text-to-Speech
+  const speakText = (text) => {
+    if ("speechSynthesis" in window) {
+      // Hentikan suara yang lagi jalan biar gak numpuk
+      window.speechSynthesis.cancel();
+
+      // Bersihkan teks dari simbol Markdown (*, _, #) biar gak ikut dibaca
+      const cleanText = text.replace(/[*_#`]/g, "");
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = "id-ID"; // Set bahasa Indonesia
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn("Browser kamu tidak mendukung fitur Text-to-Speech.");
+    }
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const userText = input;
-    // Tambahkan pesan user ke UI
     setMessages((prev) => [...prev, { role: "user", text: userText }]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Inisialisasi Gemini API
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+      // Nama model sesuai yang udah berhasil kamu pakai
+      const model = genAI.getGenerativeModel({
+        model: "gemini-3.1-flash-lite",
+      });
 
-      // Prompt Engineering: Gabungkan pertanyaan user dengan data kelembaban real-time
       const prompt = `
         Kamu adalah asisten pertanian pintar bernama AgriSmart AI. 
         Fakta saat ini: Kelembaban tanah di lokasi pengguna adalah ${currentMoisture}%.
         Pertanyaan pengguna: "${userText}"
-        Tugasmu: Berikan jawaban atau rekomendasi yang akurat, singkat (maksimal 3 paragraf pendek), santai, dan relevan dengan kondisi kelembaban tanah tersebut (misal apakah cocok untuk tanaman tertentu, kebun, atau lapangan olahraga). Jangan gunakan bahasa yang kaku.
-        ATURAN WAJIB: Kamu harus selalu menggunakan format cetak tebal (markdown bold) pada nama kategori kelembaban atau kata kunci penting (contoh: statusnya **cukup atau sedang**, **sangat kering**, atau **terlalu basah**). Jangan gunakan bahasa yang kaku.
+        Tugasmu: Berikan jawaban atau rekomendasi yang akurat, singkat (maksimal 3 paragraf pendek), santai, dan relevan dengan kondisi kelembaban tanah tersebut.
+        ATURAN WAJIB: Kamu harus selalu menggunakan format cetak tebal (markdown bold) pada nama kategori kelembaban atau kata kunci penting. Jangan gunakan bahasa yang kaku.
       `;
 
       const result = await model.generateContent(prompt);
       const response = await result.response.text();
 
-      // Tambahkan balasan AI ke UI
       setMessages((prev) => [...prev, { role: "model", text: response }]);
+
+      // Catatan: Pemanggilan speakText() otomatis dihapus dari sini
+      // Biar suaranya murni dikendalikan dari tombol aja!
     } catch (error) {
       console.error("Gemini API Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "model",
-          text: "Waduh, koneksi ke otak AI-ku lagi gangguan nih. Coba cek API Key di file .env ya!",
-        },
-      ]);
+      const errorMsg =
+        "Waduh, koneksi ke otak AI-ku lagi gangguan nih. Coba cek API Key di file .env ya!";
+      setMessages((prev) => [...prev, { role: "model", text: errorMsg }]);
     } finally {
       setIsLoading(false);
     }
-
   };
 
   return (
@@ -81,11 +98,23 @@ export default function Chatbot({ currentMoisture }) {
                   : "bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-tl-sm shadow-sm"
               }`}
             >
-              {/* Bungkus pesannya pakai tag ini */}
               <ReactMarkdown>{msg.text}</ReactMarkdown>
+
+              {/* TOMBOL SPEAKER KHUSUS AI */}
+              {msg.role === "model" && (
+                <button
+                  onClick={() => speakText(msg.text)}
+                  className="mt-3 flex items-center gap-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-600 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-gray-500 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-md transition-colors cursor-pointer w-fit"
+                  title="Bacakan teks ini"
+                >
+                  <Volume2 size={14} />
+                  <span className="text-xs font-medium">Putar Suara</span>
+                </button>
+              )}
             </div>
           </div>
         ))}
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-white dark:bg-gray-700 p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-600 text-gray-500 dark:text-gray-400">

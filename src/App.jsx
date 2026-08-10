@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import MonitoringCard from "./components/MonitoringCard";
 import Chatbot from "./components/Chatbot";
-import MoistureChart from "./components/MoistureChart"; // Import Chart barunya
+import MoistureChart from "./components/MoistureChart";
+import Plant3D from "./components/Plant3D"; // <-- Import Visual 3D
 import TextType from "./components/TextType";
 
 function App() {
@@ -14,8 +15,6 @@ function App() {
   });
 
   const [globalMoisture, setGlobalMoisture] = useState(0);
-
-  // State baru untuk nyimpen riwayat data grafik
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -31,12 +30,10 @@ function App() {
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
-  // Fungsi khusus untuk nangkep update dari MQTT dan ngisi data grafik
   const handleMoistureUpdate = (newValue) => {
-    setGlobalMoisture(newValue); // Update angka di Chatbot
+    setGlobalMoisture(newValue);
 
     setChartData((prevData) => {
-      // Ambil waktu saat ini (contoh: "14:30:15")
       const now = new Date();
       const timeString = now.toLocaleTimeString("id-ID", {
         hour: "2-digit",
@@ -45,11 +42,8 @@ function App() {
       });
 
       const newDataPoint = { time: timeString, value: newValue };
-
-      // Gabungkan data lama dengan data baru
       const updatedData = [...prevData, newDataPoint];
 
-      // Biar grafiknya gak kepanjangan dan berat, kita batasi cuma nampilin 15 data terakhir
       if (updatedData.length > 15) {
         return updatedData.slice(updatedData.length - 15);
       }
@@ -59,7 +53,6 @@ function App() {
 
   return (
     <div className="flex flex-col items-center min-h-screen w-full p-4 md:p-8 bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-300 relative">
-      {/* Tombol Dark Mode */}
       <div className="absolute top-4 right-4 md:top-8 md:right-8 z-50">
         <button
           onClick={toggleDarkMode}
@@ -69,7 +62,6 @@ function App() {
         </button>
       </div>
 
-      {/* Header pakai TextType */}
       <div className="w-full max-w-5xl text-center mb-10 mt-16 md:mt-0">
         <TextType
           as="h1"
@@ -82,7 +74,7 @@ function App() {
           typingSpeed={75}
           pauseDuration={1500}
           showCursor={true}
-          cursorCharacter="●"
+          cursorCharacter=" "
           deletingSpeed={50}
           variableSpeedEnabled={false}
           variableSpeedMin={60}
@@ -90,27 +82,30 @@ function App() {
           cursorBlinkDuration={0.5}
         />
         <p className="text-gray-500 dark:text-gray-400 mt-2">
-          Dashboard Monitoring Tanah & AI Asisten
+          Dashboard Monitoring Kelembaban Tanah & AI Asisten Pintar
         </p>
       </div>
 
-      {/* Layout Utama Grid */}
       <div className="w-full max-w-5xl flex flex-col gap-6">
         {/* Baris 1: Card Tanah & Chatbot AI */}
         <div className="flex flex-col md:flex-row w-full gap-6 items-stretch justify-center">
           <div className="w-full md:w-1/2 flex justify-center">
-            {/* Pakai handleMoistureUpdate biar grafiknya ikut ke-update */}
             <MonitoringCard onMoistureChange={handleMoistureUpdate} />
           </div>
-
           <div className="w-full md:w-1/2 flex justify-center">
             <Chatbot currentMoisture={globalMoisture} />
           </div>
         </div>
 
-        {/* Baris 2: Grafik Historis full width di bawah */}
-        <div className="w-full">
-          <MoistureChart data={chartData} />
+        {/* Baris 2: Grafik Historis (kiri) & Visual 3D (kanan) */}
+        <div className="flex flex-col md:flex-row w-full gap-6 items-stretch justify-center mb-10">
+          <div className="w-full md:w-2/3 flex justify-center">
+            <MoistureChart data={chartData} />
+          </div>
+
+          <div className="w-full md:w-1/3 flex justify-center">
+            <Plant3D moisture={globalMoisture} />
+          </div>
         </div>
       </div>
     </div>

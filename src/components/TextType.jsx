@@ -22,7 +22,7 @@ const TextType = ({
   showCursor = true,
   hideCursorWhileTyping = false,
   cursorCharacter = "|",
-  cursorClassName = "",
+  cursorClassName = " ",
   cursorBlinkDuration = 0.5,
   textColors = [],
   variableSpeed,

@@ -48,7 +48,7 @@ export default function MonitoringCard({ onMoistureChange }) {
 
   return (
     // Tambahin class dark:bg-gray-800 dan dark:border-gray-700 di div pembungkus utama
-    <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl rounded-2xl transition-colors duration-300">
+    <div className="w-full max-w-full p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl rounded-2xl transition-colors duration-300">
       {/* Header & Status Koneksi */}
       <div className="flex items-center justify-between mb-8">
         {/* Tambahin dark:text-white */}

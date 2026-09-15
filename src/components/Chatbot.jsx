@@ -24,7 +24,7 @@ export default function Chatbot({ currentMoisture }) {
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = "id-ID"; // Set bahasa Indonesia
-      utterance.rate = 1.0;
+      utterance.rate = 1.25;
       utterance.pitch = 1.0;
 
       window.speechSynthesis.speak(utterance);
@@ -74,13 +74,13 @@ export default function Chatbot({ currentMoisture }) {
   };
 
   return (
-    <div className="flex flex-col h-[400px] w-full max-w-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300">
+    <div className="flex flex-col h-[400px] w-full max-w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300">
       {/* Header Chat */}
       <div className="flex items-center gap-2 p-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
         <Bot size={24} />
         <div>
           <h3 className="font-bold">AgriSmart AI</h3>
-          <p className="text-xs opacity-80">Powered by Gemini 3.1 Flash lite</p>
+          <p className="text-xs opacity-80">Powered by Gemini</p>
         </div>
       </div>
 

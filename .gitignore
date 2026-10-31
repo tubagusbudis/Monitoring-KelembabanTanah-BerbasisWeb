@@ -27,6 +27,4 @@ dist-ssr
 .env
 .env.local
 .env.*
-
-DESIGN.md
-TASKS.md
+!.env.example

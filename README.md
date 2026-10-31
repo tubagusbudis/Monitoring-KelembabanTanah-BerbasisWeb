@@ -246,8 +246,6 @@ Monitoring-KelembabanTanah-BerbasisWeb/
 │   └── main.jsx            # Entry point React
 ├── .env.example            # Contoh template konfigurasi environment
 ├── .gitignore              # Daftar pengabaian git
-├── DESIGN.md               # Dokumentasi sistem desain antarmuka v2.0
-├── TASKS.md                # Dokumentasi tahapan implementasi fitur
 ├── package.json            # Daftar pustaka & skrip proyek
 ├── vite.config.js          # Konfigurasi Vite
 └── README.md               # Dokumentasi utama proyek
@@ -257,7 +255,7 @@ Monitoring-KelembabanTanah-BerbasisWeb/
 
 ## 🎨 Sistem Desain & Konsep UI
 
-Detail mengenai panduan warna, tipografi, grid layout, dan arsitektur visual dapat dibaca pada file [DESIGN.md](DESIGN.md).
+Dashboard mengusung estetika *High-Craft Telemetry UI* yang elegan dengan perpaduan warna alami, tipografi modern, dan tata letak responsif:
 
 - **Primary Forest Emerald:** `#0A362B` (Sidebar & Branding)
 - **Ambient Dark Canvas:** `#061814` / `#0B0F17` (Dark Mode Surface)
